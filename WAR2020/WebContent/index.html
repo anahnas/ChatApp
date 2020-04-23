@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chat App</title>
+<script src="jquery-1.11.0.js"></script>
+<script src="js/index.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/index.css"/>
+
+</head>
+<body>
+<div class="topnav">
+  <a class="active" href="#home">Home</a>
+  <a href="./login.html">Login</a>
+  <a href="./register.html">Register</a>
+  <a href="./inbox.html">Inbox</a>
+  
+</div> 
+
+
+	Hello ! <br />
+	<a href="rest/chat/test"> Test </a> <br>
+	<button id="btnPost" class="button1">Proba slanja</button> <br><br>
+	<button id="logout" class="button1">Logout</button>
+	
+	
+	<div style="background-color:#333;">
+		<h3 style="color: pink;"> --- Users ---</h3>
+		<button id="loggedIn" class="button1">Get logged in users</button>
+		<button id="registered" class="button1">Get registered users</button>
+	</div>
+	
+	<div style="background-color:#333;">
+	<h3 style="color: pink;"> --- Message ---</h3>
+	
+		<table>
+		<tr>
+			<td valign="top" rowspan="3"><textarea id="msgText" class="form-control" rows="5" cols="60" placeholder="message"></textarea></td>
+			<td valign="top"><button id="sendAll" class="button1">Send! </button></td>
+
+		</tr>
+		</table>
+	</div>
+	
+	
+
+</body>
+</html>
