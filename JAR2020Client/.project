@@ -3,6 +3,7 @@
 	<name>JAR2020Client</name>
 	<comment></comment>
 	<projects>
+		<project>JAR2020</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

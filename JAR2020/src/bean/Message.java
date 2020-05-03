@@ -3,6 +3,7 @@ package bean;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 public class Message implements Serializable {
@@ -11,82 +12,98 @@ public class Message implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String sender;
+	// private String sender;
 	// private String receiver;
-	private LocalDateTime time;
+	// private String dateSent;
+	private Date date;
 	private String subject;
 	private String content;
-	private UUID id;
-    private ArrayList<String> receivers;
+	// private UUID id;
+    // private ArrayList<String> receivers;
+    private User senderUser;
+    private User recieverUser;
+    private boolean send2All;
+
 	
 	public Message() {
 		super();
 	}
 
-	public Message(String sender, ArrayList<String> receivers, LocalDateTime time, String subject, String content, UUID id) {
+
+	public Message(Date date, String subject, String content, User senderUser, User recieverUser) {
 		super();
-		this.sender = sender;
-		this.receivers = receivers;
-		this.time = time;
+		this.date = date;
 		this.subject = subject;
 		this.content = content;
-		this.id = id;
-	}
-
-	public String getSender() {
-		return sender;
-	}
-
-	public void setSender(String sender) {
-		this.sender = sender;
+		this.senderUser = senderUser;
+		this.recieverUser = recieverUser;
 	}
 
 
-	public ArrayList<String> getReceivers() {
-		return receivers;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setReceivers(ArrayList<String> receivers) {
-		this.receivers = receivers;
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
-	public LocalDateTime getTime() {
-		return time;
-	}
-
-	public void setTime(LocalDateTime time) {
-		this.time = time;
-	}
 
 	public String getSubject() {
 		return subject;
 	}
 
+
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
+
 
 	public String getContent() {
 		return content;
 	}
 
+
 	public void setContent(String content) {
 		this.content = content;
 	}
 
-	public UUID getId() {
-		return id;
+
+	public User getSenderUser() {
+		return senderUser;
 	}
 
-	public void setId(UUID id) {
-		this.id = id;
+
+	public void setSenderUser(User senderUser) {
+		this.senderUser = senderUser;
 	}
 
-	@Override
-	public String toString() {
-		return "Message [sender=" + sender + ", time=" + time + ", subject=" + subject + ", content=" + content
-				+ ", id=" + id + ", receivers=" + receivers + "]";
+
+	public User getRecieverUser() {
+		return recieverUser;
 	}
+
+
+	public void setRecieverUser(User recieverUser) {
+		this.recieverUser = recieverUser;
+	}
+
+
+	public boolean isSend2All() {
+		return send2All;
+	}
+
+
+	public void setSend2All(boolean send2All) {
+		this.send2All = send2All;
+	}
+	
+	
+	
+	
+	
+	
 
 	
 	

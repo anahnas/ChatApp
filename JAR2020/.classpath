@@ -15,5 +15,9 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="/home/ana/Downloads/com.fasterxml.jackson.databind-2.10.0.LIFERAY-PATCHED-1.jar"/>
 	<classpathentry kind="lib" path="/home/ana/Downloads/jackson-core-2.10.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/WAR2020"/>
+	<classpathentry kind="lib" path="/home/ana/Downloads/gson-2.8.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/home/ana/Downloads/jar_files/gson-2.8.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gson_lib"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

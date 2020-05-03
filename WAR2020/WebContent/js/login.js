@@ -11,9 +11,12 @@ $(document).ready(()=> {
 	
 		$.post({
 			url: 'rest/chat/login',
-			data: JSON.stringify({username, password}),
+			data: JSON.stringify({"username":username, "password":password}),
 			contentType: 'application/json',
-			success: function() {
+			success: function(data) {
+                sessionStorage.setItem('username', username);
+				// localStorage.setItem("user", u.username);
+				// localStorage.setItem("UO", JSON.stringify(u));
 				window.location='./index.html';	
 			},
 			error: function() {

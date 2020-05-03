@@ -11,9 +11,10 @@ $(document).ready(()=> {
 		
 		$.post({
 			url: "rest/chat/register2",
-			data: JSON.stringify({username, password}),
+			data: JSON.stringify({"username":username, "password":password}),
 			contentType: "application/json",
-			success: function() {
+			success: function(data) {
+				sessionStorage.setItem('username', username);
 				window.location.href='./login.html';
 				console.log("User registered");
 				

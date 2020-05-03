@@ -1,19 +1,17 @@
 package bean;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
@@ -33,25 +31,26 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.google.gson.*;
 
 import data.Data;
+import ws.WSEndPoint;
 
 @Stateless
 @Path("/chat")
 @LocalBean
-public class ChatBean {
+public class ChatBean implements ChatRemote, ChatLocal {
+	
+	@EJB
+	WSEndPoint ws;
 	
 	private Map<String, User> users = new HashMap<>();
 	private Map<String, User> loggedInUsers = new HashMap<>(); 
-	private HashMap<UUID, Message> allMessages = new HashMap<>();
 
-	@Resource(mappedName = "java:/ConnectionFactory")
+	/*@Resource(mappedName = "java:/ConnectionFactory")
 	private ConnectionFactory connectionFactory;
 	@Resource(mappedName = "java:/jboss/exported/jms/queue/mojQueue")
-	private Queue queue;
+	private Queue queue;*/
 
 	@GET
 	@Path("/test")
@@ -65,7 +64,13 @@ public class ChatBean {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String post(@PathParam("text") String text) {
 		System.out.println("Received message: " + text);
-		try {
+		
+		String jsonmess = new Gson().toJson(text);
+		ws.echoTextMessage(jsonmess);
+		
+		
+		// ws.echoTextMessage(text);
+		/*try {
 			QueueConnection connection = (QueueConnection) connectionFactory.createConnection("guest", "guest.guest.1");
 			QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
 			QueueSender sender = session.createSender(queue);
@@ -74,7 +79,7 @@ public class ChatBean {
 			sender.send(message);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		return "Ok";
 
 	}
@@ -159,24 +164,114 @@ public class ChatBean {
 			return users;
 			
 		}
+
 		
-		/*@DELETE
-		@Path("/logout/{username}")
-		@Consumes(MediaType.APPLICATION_JSON)
-		public Response logout(@PathParam ("username") String username, User user) {
-			System.out.println("--- Logout ---");
+		@DELETE
+		@Path("/loggedIn/{user}")
+	    @Consumes(MediaType.APPLICATION_JSON)
+		@Produces(MediaType.APPLICATION_JSON)
+		public Response logout(@PathParam("user") String username) {
+			System.out.println("--- Logout ----" + username);
 			
 			for (User u : loggedInUsers.values()) {
-				if (u.getUsername().equals(user.getUsername())) {
+				if (u.getUsername().equals(username)) {
 					loggedInUsers.remove(u.getUsername());
+					System.out.println("User "+ username + "has logged out");
 					return Response.status(200).entity("OK").build();
 				}
 			}
-			return Response.status(200).entity("OK").build();
-
-		}*/
+			
+			
+			System.out.println("user "+ username + "doesn't exist");
+			return Response.status(400).build();
+		}
+	
 		
+		@POST
+	    @Path("/messages/all")
+	    @Consumes(MediaType.APPLICATION_JSON)
+	    @Produces(MediaType.TEXT_PLAIN)
+	    public Response sendMessageToAll(MessageDTO messageDTO)  {
+			System.out.println("---Sending messages to all of the users!---");
+			
+			
+			User sender = this.users.get(messageDTO.getSenderUsername());
+			if (sender == null) {
+				return Response.status(400).entity("Error").build();
+			}
+			
+			DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			String jsonmsg = "";
+			
+			for(User u: users.values()) {
+				Message message = new Message();
+				message.setContent(messageDTO.getMessageContent());
+				message.setSenderUser(sender);
+				message.setRecieverUser(u);
+				message.setSend2All(true);
+				message.setSubject(messageDTO.getMessageTitle());
+				Date date = new Date();
+				message.setDate(date);
+				u.getRecievedMessages().add(message);
 
+				messageDTO.setDateSent(dateFormat.format(date));
+				messageDTO.setReceiverUsername(u.getUsername());
+				jsonmsg = new Gson().toJson(messageDTO);
+				ws.echoTextMessage(jsonmsg);
+				
+				
+				System.out.println("Sending to: " + u.getUsername());
+			}
+			
+			System.out.println("!!!Success!!!");
+			return Response.status(200).entity("Message has been sent to all users!").build();
+		}
+		
+		@POST
+	    @Path("/messages/user")
+	    @Consumes(MediaType.APPLICATION_JSON)
+	    @Produces(MediaType.TEXT_PLAIN)
+	    public Response sendMessageToUser(MessageDTO messageDTO) {
+			
+			System.out.println("---Sending message to one specific user---");
 
+			Message message = new Message();
+			
+			message.setContent(messageDTO.getMessageContent());
+			
+			User sender = this.users.get(messageDTO.getSenderUsername());
+			if (sender == null) {
+				System.out.println("THere is no such user: " + messageDTO.getSenderUsername());
+				return Response.status(400).entity("Error").build();
+			}
+			
+			User reciever = this.users.get(messageDTO.getReceiverUsername());
+			if (reciever == null) {
+				System.out.println("There is no such receiver: " + messageDTO.getReceiverUsername());
+				return Response.status(400).entity("Error").build();
+			}
+			
+			message.setSenderUser(sender);
+			message.setRecieverUser(reciever);
+			Date dateSent = new Date();
+			message.setDate(dateSent);
+			message.setSubject(messageDTO.getMessageTitle());
+			message.setContent(messageDTO.getMessageContent());
+			
+			sender.getSentMessages().add(message);
+			reciever.getRecievedMessages().add(message);
+			
+			DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			messageDTO.setDateSent(dateFormat.format(dateSent));
+			
+			String jsonmsg = new Gson().toJson(messageDTO);
+			ws.echoTextMessage(jsonmsg);
+			
+			System.out.println("Message has been sent");
+			return Response.status(200).entity("OK").build();
+	    }
+	
+		
+	
 }
 

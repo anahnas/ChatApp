@@ -1,6 +1,8 @@
 package bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Serializable {
 	
@@ -11,6 +13,9 @@ public class User implements Serializable {
 	private String username;
 	private String password;
 	private Host host = null;
+	
+	private List<Message> sentMessages = new ArrayList<>();
+	private List<Message> recievedMessages = new ArrayList<>();
 	
 	public User() {}
 
@@ -54,6 +59,24 @@ public class User implements Serializable {
 
 	public void setHost(Host host) {
 		this.host = host;
+	}
+	
+	
+
+	public List<Message> getSentMessages() {
+		return sentMessages;
+	}
+
+	public void setSentMessages(List<Message> sentMessages) {
+		this.sentMessages = sentMessages;
+	}
+
+	public List<Message> getRecievedMessages() {
+		return recievedMessages;
+	}
+
+	public void setRecievedMessages(List<Message> recievedMessages) {
+		this.recievedMessages = recievedMessages;
 	}
 
 	@Override

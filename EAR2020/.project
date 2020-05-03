@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>JAR2020</project>
-		<project>JAR2020Client</project>
 		<project>WAR2020</project>
 	</projects>
 	<buildSpec>
